@@ -89,7 +89,7 @@ bot.on("guildMemberRemove", (guild, member) => {
   );
 });
 
-let protectedRoles = ["Admin", "Advocate", "bot"];
+const protectedRoles = ["Admin", "Advocate", "bot"];
 
 bot.registerCommand(
   "iam",
@@ -253,6 +253,22 @@ bot.registerCommand(
       "The bot will add a resource to the list which will be added to our website resource page.",
     usage: "<category> <resource information>",
     argsRequired: true
+  }
+);
+
+bot.registerCommand(
+  "nextweekly",
+  (msg, args) => {
+    // this is the Advocate role
+    if (msg.member.roles.includes("415878047351439360")) {
+      console.log("nice");
+    }
+  },
+  {
+    description: "Set up the next weekly discussion.",
+    fullDescription: "Set up the next weekly discussion.",
+    usage: "",
+    argsRequired: false
   }
 );
 
