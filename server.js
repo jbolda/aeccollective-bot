@@ -89,7 +89,7 @@ bot.on("guildMemberRemove", (guild, member) => {
   );
 });
 
-let protectedRoles = ["administrator", "moderator", "bot"];
+let protectedRoles = ["Admin", "Advocate", "bot"];
 
 bot.registerCommand(
   "iam",
