@@ -257,22 +257,29 @@ bot.registerCommand(
 );
 
 bot.registerCommand(
-  "nextweekly",
+  "weekly",
   (msg, args) => {
     // this is the Advocate role
     if (
       msg.member.roles.includes("415878047351439360") &&
       msg.channel.name === "weekly-discussion"
     ) {
-      console.log(msg);
-      bot.createChannel(
-        msg.channel.guild.id,
-        "weekly-discussion-test",
-        "0",
-        "testing",
-        "518906310389923891"
-      );
-      return "Done!";
+      msg.channel
+        .edit({ name: `wd-${args[0]}` })
+        .catch(error => console.log(error))
+        .then(oldChannel => {
+          bot
+            .createChannel(
+              msg.channel.guild.id,
+              "weekly-discussion",
+              "0",
+              "testing",
+              "518906310389923891"
+            )
+            .then(newChannel => newChannel.editPosition(1));
+          oldChannel.editPermission("412087578498695171", 1024, 2048, "role");
+        });
+      return "Thanks for participating!";
     }
 
     return;
@@ -282,7 +289,8 @@ bot.registerCommand(
     fullDescription: "Set up the next weekly discussion.",
     usage: "",
     deleteCommand: true,
-    argsRequired: false
+    argsRequired: true,
+    requirements: { roleIDs: ["415878047351439360"] }
   }
 );
 
