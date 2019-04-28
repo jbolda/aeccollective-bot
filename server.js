@@ -260,14 +260,28 @@ bot.registerCommand(
   "nextweekly",
   (msg, args) => {
     // this is the Advocate role
-    if (msg.member.roles.includes("415878047351439360")) {
-      console.log("nice");
+    if (
+      msg.member.roles.includes("415878047351439360") &&
+      msg.channel.name === "weekly-discussion"
+    ) {
+      console.log(msg);
+      bot.createChannel(
+        msg.channel.guild.id,
+        "weekly-discussion-test",
+        "0",
+        "testing",
+        "518906310389923891"
+      );
+      return "Done!";
     }
+
+    return;
   },
   {
     description: "Set up the next weekly discussion.",
     fullDescription: "Set up the next weekly discussion.",
     usage: "",
+    deleteCommand: true,
     argsRequired: false
   }
 );
