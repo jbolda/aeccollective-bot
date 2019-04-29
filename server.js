@@ -1,9 +1,12 @@
 const Eris = require("eris");
 const roleAdvocate = "415878047351439360";
+const roleEveryone = "412087578498695171";
 const channelServerGuide = "420961453730824212";
 const channelIntroduction = "416282628229038080";
 const channelAdmin = "424917093683691540";
 const channelResources = "428033045375877131";
+const categoryServerWide = "412087578498695172";
+const categoryWeeklyDiscussion = "518906310389923891";
 
 const bot = new Eris.CommandClient(
   process.env.DISCORD_BOT_TOKEN,
@@ -263,28 +266,46 @@ bot.registerCommand(
 
 bot.registerCommand(
   "weekly",
-  (msg, args) => {
+  async (msg, args) => {
     // this is the Advocate role
     if (
       msg.member.roles.includes(roleAdvocate) &&
       msg.channel.name === "weekly-discussion"
     ) {
-      msg.channel
-        .edit({ name: `wd-${args[0]}` })
+      const original = msg.channel
+        .edit({ name: `wd-${args[0]}`, parentID: categoryWeeklyDiscussion })
+        .catch(error => console.log(error))
+        .then(async oldChannel => {
+          // set it to read only
+          return oldChannel
+            .editPermission(roleEveryone, 1024, 2048, "role")
+            .catch(error => console.log(error));
+        });
+
+      const newChannel = await original
         .catch(error => console.log(error))
         .then(oldChannel => {
-          bot
+          return bot
             .createChannel(
               msg.channel.guild.id,
               "weekly-discussion",
-              "0",
-              "testing",
-              "518906310389923891"
+              0,
+              "new weekly discussion channel",
+              categoryServerWide
             )
-            .then(newChannel => newChannel.editPosition(1));
-          oldChannel.editPermission("412087578498695171", 1024, 2048, "role");
+            .catch(error => console.log(error));
         });
-      return "Thanks for participating!";
+
+      // delay because if we act on it after promise return
+      // we still don't have all of the methods that we can normally use
+      await setTimeout(() => {
+        bot
+          .getChannel(newChannel.id)
+          .editPosition(6)
+          .catch(error => console.log(error));
+      }, 10000);
+
+      return;
     }
 
     return;
