@@ -1,4 +1,12 @@
 const Eris = require("eris");
+const roleAdvocate = "415878047351439360";
+const roleEveryone = "412087578498695171";
+const channelServerGuide = "420961453730824212";
+const channelIntroduction = "416282628229038080";
+const channelAdmin = "424917093683691540";
+const channelResources = "428033045375877131";
+const categoryServerWide = "412087578498695172";
+const categoryWeeklyDiscussion = "518906310389923891";
 
 const bot = new Eris.CommandClient(
   process.env.DISCORD_BOT_TOKEN,
@@ -26,7 +34,7 @@ bot.on("messageCreate", msg => {
 
 bot.on("guildMemberAdd", (guild, member) => {
   let announcementChannel = guild.channels.find(
-    channel => channel.id === `420961453730824212`
+    channel => channel.id === channelServerGuide
   );
   // put this in the #introduction channel
   let blackList = ["twitch.tv", "twitter.com", "twitter/", "discord.me"];
@@ -37,7 +45,7 @@ bot.on("guildMemberAdd", (guild, member) => {
     )
   ) {
     bot.createMessage(
-      "416282628229038080",
+      channelIntroduction,
       `Welcome ${member.mention}! Check ${
         announcementChannel.mention
       } to get up to speed. Then feel free to share your area of interest/expertise and join in the discussion! Also, visit our website at https://www.aeccollective.com for collected resources and information.`
@@ -45,8 +53,8 @@ bot.on("guildMemberAdd", (guild, member) => {
   }
 
   // put this in the admin channel for reference
-  bot.createMessage("424917093683691540", `Welcome ${member.mention}!`);
-  bot.createMessage("424917093683691540", {
+  bot.createMessage(channelAdmin, `Welcome ${member.mention}!`);
+  bot.createMessage(channelAdmin, {
     embed: {
       title: `${member.username} has joined.`, // Title of the embed
       description: `Please welcome them!`,
@@ -76,7 +84,7 @@ bot.on("guildMemberAdd", (guild, member) => {
   if (member.username === "nicejobteam>") {
     member.ban(0, "Bot autoban from blacklist");
     bot.createMessage(
-      "424917093683691540",
+      channelAdmin,
       `We banned ${member.mention} because they were on the blacklist.`
     );
   }
@@ -84,12 +92,12 @@ bot.on("guildMemberAdd", (guild, member) => {
 
 bot.on("guildMemberRemove", (guild, member) => {
   bot.createMessage(
-    "424917093683691540",
+    channelAdmin,
     `${member.username || member.user} has just left.`
   );
 });
 
-let protectedRoles = ["administrator", "moderator", "bot"];
+const protectedRoles = ["Admin", "Advocate", "bot"];
 
 bot.registerCommand(
   "iam",
@@ -177,7 +185,7 @@ bot.registerCommand(
 
     // this one goes in the admin section
     bot
-      .createMessage("428033045375877131", {
+      .createMessage(channelResources, {
         embed: {
           title: `${resourceCategory} resource has been added.`, // Title of the embed
           description: `${resourceInformation}`,
@@ -253,6 +261,62 @@ bot.registerCommand(
       "The bot will add a resource to the list which will be added to our website resource page.",
     usage: "<category> <resource information>",
     argsRequired: true
+  }
+);
+
+bot.registerCommand(
+  "weekly",
+  async (msg, args) => {
+    // this is the Advocate role
+    if (
+      msg.member.roles.includes(roleAdvocate) &&
+      msg.channel.name === "weekly-discussion"
+    ) {
+      const original = msg.channel
+        .edit({ name: `wd-${args[0]}`, parentID: categoryWeeklyDiscussion })
+        .catch(error => console.log(error))
+        .then(async oldChannel => {
+          // set it to read only
+          return oldChannel
+            .editPermission(roleEveryone, 1024, 2048, "role")
+            .catch(error => console.log(error));
+        });
+
+      const newChannel = await original
+        .catch(error => console.log(error))
+        .then(oldChannel => {
+          return bot
+            .createChannel(
+              msg.channel.guild.id,
+              "weekly-discussion",
+              0,
+              "new weekly discussion channel",
+              categoryServerWide
+            )
+            .catch(error => console.log(error));
+        });
+
+      // delay because if we act on it after promise return
+      // we still don't have all of the methods that we can normally use
+      await setTimeout(() => {
+        bot
+          .getChannel(newChannel.id)
+          .editPosition(6)
+          .catch(error => console.log(error));
+      }, 10000);
+
+      return;
+    }
+
+    return;
+  },
+  {
+    description: "Set up the next weekly discussion.",
+    fullDescription: "Set up the next weekly discussion.",
+    usage: "",
+    deleteCommand: true,
+    argsRequired: true,
+    requirements: { roleIDs: [roleAdvocate] }
   }
 );
 
