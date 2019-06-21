@@ -4,6 +4,7 @@ const roleEveryone = "412087578498695171";
 const channelServerGuide = "420961453730824212";
 const channelIntroduction = "416282628229038080";
 const channelAdmin = "424917093683691540";
+const channelBot = "422739822013317130";
 const channelResources = "428033045375877131";
 const categoryServerWide = "412087578498695172";
 const categoryWeeklyDiscussion = "518906310389923891";
@@ -95,6 +96,30 @@ bot.on("guildMemberRemove", (guild, member) => {
     channelAdmin,
     `${member.username || member.user} has just left.`
   );
+});
+
+bot.on("messageCreate", msg => {
+  if (msg.channel.id === channelIntroduction) {
+    const httpString = `/(http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)/g`;
+
+    if (msg.embeds.length > 0) {
+      bot.createMessage(
+        channelBot,
+        `Content in Introduction from ${msg.member.mention} contained links: ${
+          msg.content
+        }`
+      );
+      return msg.delete(`Content contained embeds: ${msg.content}`);
+    } else if (!!msg.content.match(httpString)) {
+      bot.createMessage(
+        channelBot,
+        `Content in Introduction from ${msg.member.mention} contained links: ${
+          msg.content
+        }`
+      );
+      return msg.delete(`Content contained link: ${msg.content}`);
+    }
+  }
 });
 
 const protectedRoles = ["Admin", "Advocate", "bot"];
