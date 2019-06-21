@@ -48,7 +48,7 @@ bot.on("guildMemberAdd", (guild, member) => {
       channelIntroduction,
       `Welcome ${member.mention}! Check ${
         announcementChannel.mention
-      } to get up to speed. Then feel free to share your area of interest/expertise and join in the discussion! Also, visit our website at https://www.aeccollective.com for collected resources and information.`
+      } to get up to speed. Please note that you need to add a role to chat in other channels. We did this to cut down on spam. Then feel free to share your area of interest/expertise and join in the discussion! Also, visit our website at https://www.aeccollective.com for collected resources and information.`
     );
   }
 
