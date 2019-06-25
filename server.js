@@ -341,7 +341,8 @@ bot.registerCommand(
     usage: "",
     deleteCommand: true,
     argsRequired: true,
-    requirements: { roleIDs: [roleAdvocate] }
+    requirements: { roleIDs: [roleAdvocate] },
+    hidden: true
   }
 );
 
