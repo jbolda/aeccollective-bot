@@ -5,8 +5,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "eris": "^0.10.0",
-    "express": "^4.16.2"
+    "eris": "^0.10.0"
   },
   "engines": {
     "node": ">8.x"
