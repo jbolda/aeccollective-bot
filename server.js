@@ -99,7 +99,7 @@ bot.on("guildMemberRemove", (guild, member) => {
 });
 
 bot.on("messageCreate", msg => {
-  if (msg.channel.id === channelIntroduction) {
+  if (msg.channel.id === channelIntroduction && msg.member.roles.length === 0) {
     const httpString = `/(http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)/g`;
 
     if (msg.embeds.length > 0) {
