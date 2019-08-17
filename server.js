@@ -1,4 +1,7 @@
 const Eris = require("eris");
+const parse = require("date-fns/parse");
+const formatDistanceToNow = require("date-fns/formatDistanceToNow");
+
 const roleAdvocate = "415878047351439360";
 const roleEveryone = "412087578498695171";
 const channelServerGuide = "420961453730824212";
@@ -199,6 +202,41 @@ bot.registerCommand(
     fullDescription:
       "The bot will remove whatever role that it can. Only enter one role.",
     usage: "<role>"
+  }
+);
+
+bot.registerCommand(
+  "quote",
+  (msg, args) => {
+    // Make an echo command
+    if (args.length === 0) {
+      // If the user just typed ".quote", say:
+      return "Include a link to a message.";
+    } else if (args.length > 1) {
+      // If the user just typed ".quote", a link, and more stuff, say:
+      return "Include a link to a message.";
+    }
+    let discordLink = args.join(" "); // Make a string of the text after the command label
+    let discordLinkParts = discordLink.split("/");
+    let messageID = discordLinkParts[discordLinkParts.length - 1]; // get last item, should be ID
+    return msg.channel
+      .getMessage(messageID)
+      .then(Message => {
+        return `${Message.author.mention} said ${formatDistanceToNow(
+          parse(Message.timestamp, "T", new Date())
+        )} ago :\n${discordLink}\n>>> ${Message.content}`;
+      })
+      .catch(error => {
+        return `We had an error. Is it an invalid link?
+                >>> ${error}`;
+      });
+  },
+  {
+    description: "Ask the bot to pull a quote based on a message link.",
+    fullDescription: "Ask the bot to pull a quote based on a message link.",
+    usage: "<message link>",
+    argsRequired: true,
+    deleteCommand: true
   }
 );
 
