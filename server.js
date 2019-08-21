@@ -206,7 +206,7 @@ bot.registerCommand(
 );
 
 bot.registerCommand(
-  "quote",
+  "quote2",
   (msg, args) => {
     // Make an echo command
     if (args.length === 0) {
@@ -216,24 +216,30 @@ bot.registerCommand(
       // If the user just typed ".quote", a link, and more stuff, say:
       return "Include a link to a message.";
     }
-    let discordLink = args.join(" "); // Make a string of the text after the command label
-    let discordLinkParts = discordLink.split("/");
-    let messageID = discordLinkParts[discordLinkParts.length - 1]; // get last item, should be ID
-    return msg.channel
-      .getMessage(messageID)
-      .then(Message => {
-        return `${Message.author.mention} said ${formatDistanceToNow(
-          parse(Message.timestamp, "T", new Date())
-        )} ago :\n${discordLink}\n>>> ${Message.content}`;
+
+    const discordLink = args.join(" "); // Make a string of the text after the command label
+    const discordLinkParts = discordLink.split("/");
+    const channelID = discordLinkParts[discordLinkParts.length - 2]; // get second to last item, should be channelID
+    const messageID = discordLinkParts[discordLinkParts.length - 1]; // get last item, should be ID
+
+    return bot
+      .getMessage(channelID, messageID)
+      .then(message => {
+        return `${message.author.mention} said ${formatDistanceToNow(
+          parse(message.timestamp, "T", new Date())
+        )} ago in ${message.channel.mention}:\n${discordLink}\n>>> ${
+          message.content
+        }`;
       })
-      .catch(error => {
-        return `We had an error. Is it an invalid link?
-                >>> ${error}`;
-      });
+      .catch(
+        error =>
+          `We couldn't find the message. Is it an invalid link?\n>>> ${error}`
+      );
   },
   {
     description: "Ask the bot to pull a quote based on a message link.",
-    fullDescription: "Ask the bot to pull a quote based on a message link.",
+    fullDescription:
+      "Ask the bot to pull a quote based on a message link. You need developer mode enabled to copy the link. On mobile, press and hold, click share, and then copy to clipboard. On desktop, right click and copy the link.",
     usage: "<message link>",
     argsRequired: true,
     deleteCommand: true
