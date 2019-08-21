@@ -206,7 +206,7 @@ bot.registerCommand(
 );
 
 bot.registerCommand(
-  "quote2",
+  "quote",
   (msg, args) => {
     // Make an echo command
     if (args.length === 0) {
